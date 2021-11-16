@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api")
-public class EntryResource {
+public class EntryResource{
 
     private final Logger log = LoggerFactory.getLogger(EntryResource.class);
 
@@ -52,12 +52,44 @@ public class EntryResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new entryDTO, or with status {@code 400 (Bad Request)} if the entry has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    /*@PostMapping("/entries")*/
+
+    /*New Lines
+    */
+    String[] keywords_positive = {"Love", "LOVE", "love", "Happy", "HAPPY", "happy", "Trust", "TRUST", "trust"};
+    String[] keywords_negative = {"Sad", "SAD", "sad", "Fear", "FEAR", "fear", "Lonely", "LONELY", "lonely"};
+	
     @PostMapping("/entries")
+
+	
     public ResponseEntity<EntryDTO> createEntry(@Valid @RequestBody EntryDTO entryDTO) throws URISyntaxException {
         log.debug("REST request to save Entry : {}", entryDTO);
         if (entryDTO.getId() != null) {
             throw new BadRequestAlertException("A new entry cannot already have an ID", ENTITY_NAME, "idexists");
         }
+	/*New Lines*/
+	if (entryDTO.getBlogPositive() == true) {
+		for (String keyword : keywords_negative){
+		if (entryDTO.getTitle().contains(keyword)){
+			throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidcontent");
+			}
+		else if (entryDTO.getContent().contains(keyword)){
+			throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidcontent");
+			}	
+		}
+	}
+
+	else if (entryDTO.getBlogPositive() == false) {
+		for (String keyword1 : keywords_positive){
+		if (entryDTO.getTitle().contains(keyword1)){
+			throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidcontent");
+			}
+		else if (entryDTO.getContent().contains(keyword1)){
+			throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidcontent");
+			}
+		}
+	}
+
         EntryDTO result = entryService.save(entryDTO);
         return ResponseEntity.created(new URI("/api/entries/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
@@ -79,7 +111,30 @@ public class EntryResource {
         if (entryDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        EntryDTO result = entryService.save(entryDTO);
+	/*New Lines*/
+	if (entryDTO.getBlogPositive() == true) {
+		for (String keyword : keywords_negative){
+		if (entryDTO.getTitle().contains(keyword)){
+			throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidcontent");
+			}
+		else if (entryDTO.getContent().contains(keyword)){
+			throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidcontent");
+			}
+		}
+	}
+
+	else if (entryDTO.getBlogPositive() == false) {
+		for (String keyword1: keywords_positive){
+		if (entryDTO.getTitle().contains(keyword1)){
+			throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidcontent");
+			}
+		else if (entryDTO.getContent().contains(keyword1)){
+			throw new BadRequestAlertException("Invalid Content", ENTITY_NAME, "invalidcontent");
+			}
+		}
+	}
+	
+	EntryDTO result = entryService.save(entryDTO);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, entryDTO.getId().toString()))
             .body(result);

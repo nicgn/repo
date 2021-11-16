@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link Entry}.
@@ -80,5 +83,12 @@ public class EntryService {
     public void delete(Long id) {
         log.debug("Request to delete Entry : {}", id);
         entryRepository.deleteById(id);
+    }
+
+    /*Get all entries by blogid*/
+    @Transactional(readOnly = true)
+    public List<EntryDTO> get_all_entries_by_blogid(Long blogId){
+	log.debug("Request to get all entries by blogid : {}");
+	return entryRepository.get_all_entries_by_blogid(blogId).stream().map(entryMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 }

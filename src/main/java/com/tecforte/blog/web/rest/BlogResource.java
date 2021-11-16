@@ -1,8 +1,10 @@
 package com.tecforte.blog.web.rest;
 
 import com.tecforte.blog.service.BlogService;
+import com.tecforte.blog.service.EntryService;
 import com.tecforte.blog.web.rest.errors.BadRequestAlertException;
 import com.tecforte.blog.service.dto.BlogDTO;
+import com.tecforte.blog.service.dto.EntryDTO;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -35,8 +37,11 @@ public class BlogResource {
 
     private final BlogService blogService;
 
-    public BlogResource(BlogService blogService) {
+    private final EntryService entryService;
+
+    public BlogResource(BlogService blogService, EntryService entryService) {
         this.blogService = blogService;
+	this.entryService = entryService;
     }
 
     /**
@@ -115,5 +120,18 @@ public class BlogResource {
         log.debug("REST request to delete Blog : {}", id);
         blogService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
+    }
+
+    /* New API (Delete specific entries by blogid) */
+    @DeleteMapping("/blogs/{id}/clean")
+    public ResponseEntity<Void> delete_entry_with_keywords_Blog(@PathVariable Long id) {
+	log.debug("REST request to delete entries in Blog : {}", id);
+	List<EntryDTO> entryDTO = entryService.get_all_entries_by_blogid(id);
+	for (int i = 0; i < entryDTO.size(); i++){
+		if (entryDTO.get(i).getTitle().contains("lost") || entryDTO.get(i).getContent().contains("ruin")){
+			entryService.delete(entryDTO.get(i).getId());
+		}
+	}
+	return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
 }

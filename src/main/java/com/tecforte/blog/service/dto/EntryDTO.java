@@ -28,6 +28,8 @@ public class EntryDTO implements Serializable {
 
     private String blogName;
 
+    private boolean blogPositive;
+
     private String createdBy;
 
     private Instant createdDate;
@@ -82,6 +84,14 @@ public class EntryDTO implements Serializable {
 
     public void setBlogName(String blogName) {
         this.blogName = blogName;
+    }
+
+    public boolean getBlogPositive() {
+	return blogPositive;
+    }
+
+    public void setBlogPositive(Boolean blogPositive){
+	this.blogPositive = blogPositive;
     }
 
     public String getCreatedBy() {
@@ -146,6 +156,7 @@ public class EntryDTO implements Serializable {
             ", content='" + getContent() + "'" +
             ", blog=" + getBlogId() +
             ", blog='" + getBlogName() + "'" +
+	    ", blogstat=" + getBlogPositive() + 
             "}";
     }
 }
